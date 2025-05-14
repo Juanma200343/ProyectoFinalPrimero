@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneo de Debate</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <a href="https://blogsaverroes.juntadeandalucia.es/iestorrredelosguzmanes/" target="_blank">
+            <img src="img/logo.png" alt="Logotipo Instituto" id="logo">
+        </a>
+        <h1>Página principal del torneo de debate--</h1>
+        <div class="contenedorBotonInicio">
+            <button onclick="goHome()">Inicio</button>
+        </div>
+    </header>
+
+    <principal>
+        <div class="cajaDeBotones">
+            <button class="botones" onclick="window.location.href='/ejemplo/altaParticipante.html'">Agregar Participante</button>
+            <button class="botones" onclick="window.location.href='/ejemplo/Fase.html'">Fases del Torneo Debate</button>
+            
+        </div>
+    </principal>
+
+   <script>
+    function goHome() {
+        window.location.href = "inicio.html";
+    }
+
+    </script>
+    
+</body>
+
+</html>

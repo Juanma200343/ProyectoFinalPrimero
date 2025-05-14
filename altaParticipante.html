@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="https://blogsaverroes.juntadeandalucia.es/iestorrredelosguzmanes/" target="_blank">
+            <img src="img/logo.png" alt="Logotipo Instituto" id="logo">
+        </a>
+        <h1>Menu del Torneo</h1>
+        <div class="contenedorBotonInicio">
+            <button class="botonInicio" onclick="goHome()">Inicio</button>
+        </div>
+    </header>
+
+    <main>
+        
+        <div class="formulario">
+        
+	<h2>Formulario de Información</h2>
+<form method="POST" action=altaParticipante>
+
+	 <input type="hidden" name="action" value="mostrarMenu">
+	
+	<div class="formulario">
+		<label for="nombre">Nombre:</label>
+		<input type="text" id="nombre" name="nombre" required>
+	</div>
+	
+	<div class="formulario">
+		<label for="apellidos">Apellidos:</label>
+		<input type="text" id="apellidos" name="apellidos" required>
+	</div>
+	
+	<div class="formulario">
+		<label for="telefono">Teléfono:</label>
+		<input type="tel" id="telefono" name="telefono" required pattern="[0-9]{9}">
+	</div>
+	
+	<div class="formulario">
+		<label for="correo">Correo Electrónico:</label>
+		<input type="email" id="correo" name="correo" required>
+	</div>
+	
+	<div class="formulario">
+		<label for="equipo">Equipo al que pertenece:</label>
+		<select id="equipo" name="equipo" required>
+			<option value="">Seleccione un equipo</option>
+			<option value="Equipo 1">Equipo 1</option>
+			<option value="Equipo 2">Equipo 2</option>
+			<option value="Equipo 3">Equipo 3</option>
+			<option value="Equipo 4">Equipo 4</option>
+			<option value="Equipo 5">Equipo 5</option>
+			<option value="Equipo 6">Equipo 6</option>
+			<option value="Equipo 7">Equipo 7</option>
+			<option value="Equipo 8">Equipo 8</option>
+			<option value="Equipo 9">Equipo 9</option>
+			<option value="Equipo 10">Equipo 10</option>
+			<option value="Equipo 11">Equipo 11</option>
+			<option value="Equipo 12">Equipo 12</option>
+			<option value="Equipo 13">Equipo 13</option>
+			<option value="Equipo 14">Equipo 14</option>
+			<option value="Equipo 15">Equipo 15</option>
+			<option value="Equipo 16">Equipo 16</option>
+		</select>
+	</div>
+	
+<div class="formulario">
+			  
+			  
+                <button type="submit">Enviar Datos</button>
+            </form>
+         <div id="mensaje"></div>
+    </main>
+
+    <script>
+    
+    function goHome() {
+        window.location.href = "inicio.html";
+    }
+    document.getElementById("formMenu").addEventListener("submit", function(event) {
+        event.preventDefault();
+ 
+        const mensaje = document.getElementById("mensaje");
+        mensaje.textContent = "Usuario añadido correctamente.";
+ 
+        setTimeout(goHome, 3000);
+    });
+ 
+  
+    </script>
+</body>
+</html>
+
