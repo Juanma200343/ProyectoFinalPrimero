@@ -13,6 +13,7 @@ import org.thymeleaf.web.servlet.JavaxServletWebApplication;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
 
@@ -20,7 +21,7 @@ import dao.JdbcDao;
 import models.Equipo;
 import models.Participantes;
 
-
+@WebServlet("/ProyectoServlet")
 public class ProyectoServlet extends HttpServlet {
     private JdbcDao dao;
     private static final long serialVersionUID = 2051990309999713971L;
@@ -30,101 +31,63 @@ public class ProyectoServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
 		System.out.println("En init");
-		ServletContext servletContext = getServletContext();
-		JavaxServletWebApplication application = JavaxServletWebApplication.buildApplication(servletContext);
-		WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(application);
-		templateResolver.setPrefix("/WEB-INF/templates/");
-		templateResolver.setSuffix(".html");
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		templateEngine = new TemplateEngine();
-		templateEngine.setTemplateResolver(templateResolver);
+		try {
+			dao=new JdbcDao();
+		}catch(Exception e) {
+			
+			throw new ServletException("Error al conectarse en la base de Datos",e);
+		}
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 		System.out.println("En get");
 
-		ServletContext servletContext = getServletContext();
-		JavaxServletWebApplication application = JavaxServletWebApplication.buildApplication(servletContext);
-		IServletWebExchange webExchange = application.buildExchange(request, response);
-		WebContext context = new WebContext(webExchange, request.getLocale());
-		response.setContentType("text/html;charset=UTF-8");
+	
 		// Datos de ejemplo: lista de nombres
 
-		String pathInfo = request.getPathInfo(); // Ejemplo: /listarUsuarios o null
+		String action = request.getParameter("action"); // Ejemplo: /listarUsuarios o null
+		 if (action == null || action.trim().isEmpty() || "inicio".equalsIgnoreCase(action)) {
+		        // Verifica si la URL ya es 'inicio.html' para evitar redirección infinita
+		        String currentPath = request.getRequestURI();
+		        if (!currentPath.endsWith("inicio.html")) {
+		            response.sendRedirect(request.getContextPath() + "/inicio.html");
+		        }
 		
-		if (pathInfo == null || pathInfo.trim().isEmpty() || pathInfo.trim().equalsIgnoreCase("/inicio")) {
-			// Redirigir a la página de Principal
-			templateEngine.process("inicio", context, response.getWriter());
-			response.sendRedirect("inicio.html");
 			
-		} else if (pathInfo == null || pathInfo.trim().isEmpty() || pathInfo.trim().equalsIgnoreCase("/indexJ")) {
-			templateEngine.process("indexJ", context, response.getWriter());
+		} else if ("indexJ".equals(action)) {
 			response.sendRedirect("indexJ.html");
 			
-		} else if (pathInfo == null || pathInfo.trim().isEmpty() || pathInfo.trim().equalsIgnoreCase("/altaParticipante")) {
-			templateEngine.process("altaParticipante", context, response.getWriter());
+		} else if ("altaParticipante".equals(action)) {
 			response.sendRedirect("altaPartipante.html");
 			
-			}else if (pathInfo == null || pathInfo.trim().isEmpty() || pathInfo.trim().equalsIgnoreCase("/Fase")) {
-				templateEngine.process("Fase", context, response.getWriter());
+			}else if ("Fase".equals(action)) {
 				response.sendRedirect("Fase.html");
 				
 			}else {
-			// Dividimos por segmentos
-		    String[] partes = pathInfo.substring(1).split("/");
-		    String accion = partes[0]; // ej: "detalleUsuario"
-		    String parametro1 = partes.length > 1 ? partes[1] : null;
-		    
-		    System.out.println("Servlet invocado. accion: " + accion);
-
-		    switch (accion) {
-			case "index":
-				templateEngine.process("index", context, response.getWriter());
-				break;
-				
-			default:
-				// Ruta no reconocida
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Ruta no válida: " + pathInfo);
+			
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Ruta no válida: " + action);
 			}
 		}
-	}
+	
 
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String path = request.getServletPath();
-		String pathInfo = request.getPathInfo(); // Ejemplo: /listarUsuarios o null
-		System.out.println(pathInfo);
-		ServletContext servletContext = getServletContext();
-		JavaxServletWebApplication application = JavaxServletWebApplication.buildApplication(servletContext);
-		IServletWebExchange webExchange = application.buildExchange(request, response);
-		WebContext context = new WebContext(webExchange, request.getLocale());
+		String pathInfo = request.getPathInfo();
 
-		switch (pathInfo) {
-		case "/altaParticipante":
-			System.out.println("en el alta de participantes");
-			// Lógica para listar usuarios
-		boolean correcto = altaParticipante(request, response, context);
-		if (correcto) {
-				context.setVariable("error", false);
-				templateEngine.process("Fase", context, response.getWriter());
-			} else {
-				context.setVariable("error", true);
-				templateEngine.process("altaParticipante", context, response.getWriter());
-
-			}
+	if("/altaParticipante".equals(pathInfo)) {
+		boolean participanteCreado = altaParticipante(request,response);
+		if(participanteCreado) {
 			
-			
-			
-			break;
-		default:
-			// Ruta no reconocida
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, "Ruta no válida: " + path);
+			response.sendRedirect("inicio.html");
+		}
+		else {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND,"ruta no valida" + pathInfo);
 		}
 	}
-    
-    boolean altaParticipante(HttpServletRequest request, HttpServletResponse response, WebContext context)
+}
+    boolean altaParticipante(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 	String nombre = request.getParameter("nombre");
@@ -135,16 +98,17 @@ public class ProyectoServlet extends HttpServlet {
 
 		boolean correcto = false;
 
-		try {
-			System.out.println("¿Dime tu id?");
-			Participantes dao = new Participantes(1, "Juan", "Miranda");
-			correcto = dao.validarParticipante();
-		} catch (Exception e) {
-			e.printStackTrace();
+	    try {
+	        // Crear un nuevo objeto Participantes con los datos recibidos
+	        Participantes participante = new Participantes(nombre, apellidos, telefono, correo, equipo);
 
-		}
-		
-    	return true;
+	        // Validar e insertar el participante en la base de datos
+	        correcto = participante.validarParticipante(); // Método que debes implementar en la clase Participantes
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return correcto; // Retorna true si la inserción fue exitosa, de lo contrario false
 	}
 
     private void generarFormulario(HttpServletRequest request, HttpServletResponse response) 
